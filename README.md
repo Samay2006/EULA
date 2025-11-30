@@ -60,12 +60,6 @@ UI Display → Human-friendly explanations
 
 🧪 Demo Video
 
-(From your PDF)
-
-https://drive.google.com/file/d/1CiyjRi5pYM4Ce8dIMAOsWtTnIL-vsJL8/view?usp=drivesdk
-
-https://drive.google.com/file/d/1CiyjRi5pYM4Ce8dIMAOsWtTnIL-vsJL8/view?usp=drivesdk
-
 https://drive.google.com/file/d/1CiyjRi5pYM4Ce8dIMAOsWtTnIL-vsJL8/view?usp=drivesdk
 
 💻 Technology Stack
