@@ -1,73 +1,120 @@
-# Welcome to your Lovable project
+AI-Powered EULA & Terms Simplifier
+Transform complex legal documents into clear, human-readable language with automated risk detection.
+🚨 The Problem
 
-## Project info
+Most users blindly click “I Agree” without understanding:
 
-**URL**: https://lovable.dev/projects/a687326a-a5d7-4d89-b379-cd8de585f2bc
+Hidden data-sharing clauses
 
-## How can I edit this code?
+Privacy risks
 
-There are several ways of editing your application.
+Auto-renewal traps
 
-**Use Lovable**
+Liability issues
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/a687326a-a5d7-4d89-b379-cd8de585f2bc) and start prompting.
+According to Deloitte, 92% of users never read Terms of Service.
+Legal jargon is too long, too confusing, and intentionally non-transparent.
 
-Changes made via Lovable will be committed automatically to this repo.
+This causes:
 
-**Use your preferred IDE**
+Loss of privacy
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Unknowingly granting permissions
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Legal vulnerability
 
-Follow these steps:
+✅ Our Solution: Clarity Through AI
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+An intelligent assistant that takes any legal document (PDF or text) and instantly converts it into understandable language.
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+Core Features
 
-# Step 3: Install the necessary dependencies.
-npm i
+🔹 Extract
+Upload any PDF or text. The system reads and extracts content automatically.
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+🔹 Simplify
+Transforms legal jargon into simple, everyday language that anyone can understand.
 
-**Edit a file directly in GitHub**
+🔹 Summarize
+Creates short, actionable summaries of key terms.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+🔹 Risk Detection
+Flags hidden clauses, privacy red flags, and unusual permission requests.
 
-**Use GitHub Codespaces**
+🔹 Present
+Outputs a clean, readable breakdown highlighting the most important points.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+🔁 System Workflow (End-to-End)
 
-## What technologies are used for this project?
+User Upload → PDF/Text
 
-This project is built with:
+Text Extraction → OCR using Tesseract
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Pre-processing → Cleanup + structure
 
-## How can I deploy this project?
+AI Processing → NLP simplification using GPT-4/LLaMA-3
 
-Simply open [Lovable](https://lovable.dev/projects/a687326a-a5d7-4d89-b379-cd8de585f2bc) and click on Share -> Publish.
+Risk Scoring → Highlight privacy + legal risks
 
-## Can I connect a custom domain to my Lovable project?
+UI Display → Human-friendly explanations
 
-Yes, you can!
+🧪 Demo Video
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+https://drive.google.com/file/d/1CiyjRi5pYM4Ce8dIMAOsWtTnIL-vsJL8/view?usp=drivesdk
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+💻 Technology Stack
+Frontend
+
+React
+
+Tailwind CSS
+
+Shadcn-UI
+
+Backend
+
+Node.js
+
+Express.js
+
+AI Processing
+
+GPT-4 / LLaMA-3
+
+Hugging Face NLP models
+
+OCR
+
+Tesseract for PDF text extraction
+
+Database
+
+MongoDB
+
+Deployment
+
+Vercel (Frontend)
+
+Render (Backend)
+
+📈 Feasibility & Impact
+Technically Feasible
+
+Uses reliable, production-ready tools:
+
+Advanced LLM models
+
+Mature OCR tech
+
+Scalable cloud platforms
+
+Real-World Impact
+
+🛡️ User Safety
+Reduces risk from hidden clauses.
+
+💡 Comprehension
+Makes legal content understandable for all users.
+
+✨ Transparency
+Boosts trust between users and platforms.eatures/custom-domain#custom-domain)
