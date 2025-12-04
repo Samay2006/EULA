@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Upload, X, FileText, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { motion } from 'framer-motion';
 
 export const DocumentUpload = ({ onUploadComplete, onCancel }) => {
   const [file, setFile] = useState(null);
@@ -16,12 +17,12 @@ export const DocumentUpload = ({ onUploadComplete, onCancel }) => {
     if (!selectedFile) return;
 
     if (selectedFile.type !== 'application/pdf') {
-      toast.error('Please select a PDF file');
+      toast.error('Only PDF files are supported 😔');
       return;
     }
 
     if (selectedFile.size > 20 * 1024 * 1024) {
-      toast.error('File size must be less than 20MB');
+      toast.error('File must be under 20MB 🚫');
       return;
     }
 
@@ -54,99 +55,139 @@ export const DocumentUpload = ({ onUploadComplete, onCancel }) => {
 
       if (dbError) throw dbError;
 
-      toast.success('Document uploaded successfully!');
+      toast.success('Uploaded successfully ✨');
       onUploadComplete();
-
     } catch (error) {
-      toast.error(error.message || 'Failed to upload document');
+      toast.error(error.message || 'Upload failed 💀');
     } finally {
       setUploading(false);
     }
   };
 
   return (
-    <Card className="shadow-medium">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>Upload Document</CardTitle>
-            <CardDescription>
-              Upload a PDF document for AI analysis
-            </CardDescription>
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35 }}
+    >
+      <Card
+        className="
+          backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl
+          shadow-[0_0_20px_rgba(140,100,255,0.2)]
+        "
+      >
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
+                Upload Document
+              </CardTitle>
+              <CardDescription>
+                Drop your PDF and let the AI cook 👨‍🍳🤍
+              </CardDescription>
+            </div>
+
+            <Button variant="ghost" size="icon" onClick={onCancel}>
+              <X className="h-5 w-5" />
+            </Button>
           </div>
+        </CardHeader>
 
-          <Button variant="ghost" size="icon" onClick={onCancel}>
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-      </CardHeader>
+        <CardContent>
+          <div className="space-y-5">
 
-      <CardContent>
-        <div className="space-y-4">
-          {!file ? (
-            <label className="flex flex-col items-center justify-center border-2 border-dashed border-border rounded-lg p-12 cursor-pointer hover:border-primary transition-colors">
-              <Upload className="h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-sm text-muted-foreground mb-2">
-                Click to upload or drag and drop
-              </p>
-              <p className="text-xs text-muted-foreground">
-                PDF files only (max 20MB)
-              </p>
+            {/* --- No file selected --- */}
+            {!file && (
+              <motion.label
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="
+                  flex flex-col items-center justify-center p-12 rounded-2xl cursor-pointer
+                  border-2 border-dashed border-white/10
+                  text-muted-foreground
+                  transition-all
+                  hover:border-purple-400/40 hover:bg-white/5
+                  hover:shadow-[0_0_18px_rgba(180,100,255,0.25)]
+                "
+              >
+                <Upload className="h-12 w-12 mb-4 text-purple-300 animate-pulse" />
+                <p className="text-sm mb-1">Click to upload / drag & drop</p>
+                <p className="text-xs opacity-70">PDF only • max 20MB</p>
 
-              <input
-                type="file"
-                accept=".pdf"
-                className="hidden"
-                onChange={handleFileChange}
-              />
-            </label>
-          ) : (
-            <div className="flex items-center justify-between p-4 border border-border rounded-lg">
-              <div className="flex items-center gap-3">
-                <FileText className="h-8 w-8 text-primary" />
+                <input
+                  type="file"
+                  accept=".pdf"
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+              </motion.label>
+            )}
 
-                <div>
-                  <p className="font-medium">{file.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {(file.size / 1024 / 1024).toFixed(2)} MB
-                  </p>
+            {/* --- File selected preview --- */}
+            {file && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="
+                  flex items-center justify-between p-4 rounded-xl
+                  bg-white/5 border border-white/10
+                "
+              >
+                <div className="flex items-center gap-3">
+                  <FileText className="h-9 w-9 text-purple-400 drop-shadow" />
+                  <div>
+                    <p className="font-medium">{file.name}</p>
+                    <p className="text-xs opacity-70">
+                      {(file.size / 1024 / 1024).toFixed(2)} MB
+                    </p>
+                  </div>
                 </div>
-              </div>
 
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setFile(null)}
-                disabled={uploading}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setFile(null)}
+                  disabled={uploading}
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              </motion.div>
+            )}
 
-          {file && (
-            <div className="flex gap-3">
-              <Button
-                onClick={handleUpload}
-                className="flex-1 gap-2"
-                disabled={uploading}
+            {/* --- Upload button --- */}
+            {file && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex gap-3"
               >
-                {uploading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Uploading...
-                  </>
-                ) : (
-                  <>
-                    <Upload className="h-4 w-4" />
-                    Upload & Analyze
-                  </>
-                )}
-              </Button>
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+                <Button
+                  onClick={handleUpload}
+                  disabled={uploading}
+                  className="
+                    flex-1 gap-2 rounded-xl py-5 text-base
+                    bg-gradient-to-r from-primary to-purple-500
+                    hover:shadow-[0_0_18px_rgba(180,100,255,0.4)]
+                    transition-all duration-300
+                  "
+                >
+                  {uploading ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      Uploading…
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-5 w-5" />
+                      Upload & Analyze
+                    </>
+                  )}
+                </Button>
+              </motion.div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };

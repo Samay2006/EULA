@@ -6,10 +6,8 @@ CREATE TABLE public.profiles (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Enable RLS on profiles
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
--- Profiles policies: users can read their own profile
 CREATE POLICY "Users can view own profile"
   ON public.profiles FOR SELECT
   TO authenticated
@@ -20,7 +18,7 @@ CREATE POLICY "Users can update own profile"
   TO authenticated
   USING (auth.uid() = id);
 
--- Create documents table
+-- Documents table
 CREATE TABLE public.documents (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   owner_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -33,10 +31,8 @@ CREATE TABLE public.documents (
   uploaded_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Enable RLS on documents
 ALTER TABLE public.documents ENABLE ROW LEVEL SECURITY;
 
--- Documents policies: users can manage their own documents
 CREATE POLICY "Users can view own documents"
   ON public.documents FOR SELECT
   TO authenticated
@@ -57,7 +53,7 @@ CREATE POLICY "Users can delete own documents"
   TO authenticated
   USING (auth.uid() = owner_id);
 
--- Create summaries table
+-- Summaries table
 CREATE TABLE public.summaries (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   document_id UUID NOT NULL REFERENCES public.documents(id) ON DELETE CASCADE,
@@ -68,18 +64,16 @@ CREATE TABLE public.summaries (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Enable RLS on summaries
 ALTER TABLE public.summaries ENABLE ROW LEVEL SECURITY;
 
--- Summaries policies: users can view summaries for their documents
 CREATE POLICY "Users can view summaries for own documents"
   ON public.summaries FOR SELECT
   TO authenticated
   USING (
     EXISTS (
-      SELECT 1 FROM public.documents 
-      WHERE documents.id = summaries.document_id 
-      AND documents.owner_id = auth.uid()
+      SELECT 1 FROM public.documents
+      WHERE documents.id = summaries.document_id
+        AND documents.owner_id = auth.uid()
     )
   );
 
@@ -88,13 +82,13 @@ CREATE POLICY "Users can insert summaries for own documents"
   TO authenticated
   WITH CHECK (
     EXISTS (
-      SELECT 1 FROM public.documents 
-      WHERE documents.id = summaries.document_id 
-      AND documents.owner_id = auth.uid()
+      SELECT 1 FROM public.documents
+      WHERE documents.id = summaries.document_id
+        AND documents.owner_id = auth.uid()
     )
   );
 
--- Create risk_flags table
+-- Risk flags table
 CREATE TABLE public.risk_flags (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   document_id UUID NOT NULL REFERENCES public.documents(id) ON DELETE CASCADE,
@@ -105,18 +99,16 @@ CREATE TABLE public.risk_flags (
   detected_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Enable RLS on risk_flags
 ALTER TABLE public.risk_flags ENABLE ROW LEVEL SECURITY;
 
--- Risk flags policies: users can view flags for their documents
 CREATE POLICY "Users can view risk flags for own documents"
   ON public.risk_flags FOR SELECT
   TO authenticated
   USING (
     EXISTS (
-      SELECT 1 FROM public.documents 
-      WHERE documents.id = risk_flags.document_id 
-      AND documents.owner_id = auth.uid()
+      SELECT 1 FROM public.documents
+      WHERE documents.id = risk_flags.document_id
+        AND documents.owner_id = auth.uid()
     )
   );
 
@@ -125,22 +117,22 @@ CREATE POLICY "Users can insert risk flags for own documents"
   TO authenticated
   WITH CHECK (
     EXISTS (
-      SELECT 1 FROM public.documents 
-      WHERE documents.id = risk_flags.document_id 
-      AND documents.owner_id = auth.uid()
+      SELECT 1 FROM public.documents
+      WHERE documents.id = risk_flags.document_id
+        AND documents.owner_id = auth.uid()
     )
   );
 
--- Create storage bucket for documents
-INSERT INTO storage.buckets (id, name, public) 
+-- Storage bucket
+INSERT INTO storage.buckets (id, name, public)
 VALUES ('documents', 'documents', false);
 
--- Storage policies for documents bucket
+-- Storage policies (ensure folder per user: documents/{user_id}/file.pdf)
 CREATE POLICY "Users can upload own documents"
   ON storage.objects FOR INSERT
   TO authenticated
   WITH CHECK (
-    bucket_id = 'documents' 
+    bucket_id = 'documents'
     AND (storage.foldername(name))[1] = auth.uid()::text
   );
 
@@ -148,7 +140,7 @@ CREATE POLICY "Users can view own documents"
   ON storage.objects FOR SELECT
   TO authenticated
   USING (
-    bucket_id = 'documents' 
+    bucket_id = 'documents'
     AND (storage.foldername(name))[1] = auth.uid()::text
   );
 
@@ -156,11 +148,11 @@ CREATE POLICY "Users can delete own documents"
   ON storage.objects FOR DELETE
   TO authenticated
   USING (
-    bucket_id = 'documents' 
+    bucket_id = 'documents'
     AND (storage.foldername(name))[1] = auth.uid()::text
   );
 
--- Create function to handle new user signups
+-- Trigger to auto-create profile
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -178,13 +170,12 @@ BEGIN
 END;
 $$;
 
--- Trigger to create profile on user signup
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW
   EXECUTE FUNCTION public.handle_new_user();
 
--- Create indexes for better performance
+-- Indexes
 CREATE INDEX idx_documents_owner ON public.documents(owner_id);
 CREATE INDEX idx_documents_processed ON public.documents(processed);
 CREATE INDEX idx_summaries_document ON public.summaries(document_id);
